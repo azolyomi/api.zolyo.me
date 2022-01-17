@@ -15,6 +15,5 @@ def return_json():
     return jsonify({'test': True})
 
 
-
 if __name__ == "__main__":
     app.run()
