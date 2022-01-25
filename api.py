@@ -1,4 +1,9 @@
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, request
+import sys
+sys.path.append('../')
+from sarcasm_nlp.sarcasm_model import SarcasmModel
+
+
 
 app = Flask(__name__)
 
@@ -14,6 +19,14 @@ def homepage():
 def return_json():
     return jsonify({'test': True})
 
+sarcasm_detector = SarcasmModel(path_to_build_folder="../sarcasm_nlp/", path_to_saved_model="../sarcasm_nlp/saved_model/fake_news_v1/")
+
+@app.route('/sarcasm_detection', methods=["POST"])
+def return_prediction():
+    json_data = request.get_json()
+    if (json_data["query"]):
+        return jsonify(sarcasm_detector.predict(json_data["query"]))
+    else: return jsonify({'error': 'please specify a string'})
 
 if __name__ == "__main__":
     app.run()
