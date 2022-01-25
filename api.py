@@ -1,9 +1,7 @@
-from flask import Flask, jsonify, send_from_directory, request
+from flask import Flask, jsonify, send_from_directory, request, Response
 import sys
 sys.path.append('../')
 from sarcasm_nlp.sarcasm_model import SarcasmModel
-
-
 
 app = Flask(__name__)
 
@@ -26,7 +24,7 @@ def return_prediction():
     json_data = request.get_json()
     if (json_data["query"]):
         return jsonify(sarcasm_detector.predict(json_data["query"]))
-    else: return jsonify({'error': 'please specify a string'})
+    else: return jsonify({'error': 'please specify a string'});
 
 if __name__ == "__main__":
     app.run()
