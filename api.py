@@ -11,7 +11,7 @@ def favicon():
 
 @app.route('/')
 def homepage():
-    return '<h3>You\'re not supposed to be here...</h3>'
+    return 'You\'re not supposed to be here...'
 
 @app.route('/test', methods=["GET"])
 def return_json():
@@ -22,9 +22,22 @@ sarcasm_detector = SarcasmModel(path_to_build_folder="../sarcasm_nlp/", path_to_
 @app.route('/sarcasm_detection', methods=["POST"])
 def return_prediction():
     json_data = request.get_json()
-    if (json_data["query"]):
-        return jsonify(sarcasm_detector.predict(json_data["query"]))
-    else: return jsonify({'error': 'please specify a string'});
+    if (json_data is None):
+        return jsonify({'error': 'api only accepts json format'})
+    try:
+        if ("query" in json_data):
+            query = json_data["query"]
+            if ("threshold" in json_data):
+                try:
+                    threshold = float(json_data["threshold"])
+                    return jsonify(sarcasm_detector.predict(query, threshold))
+                except ValueError:
+                    return jsonify({'error': 'please pass in a float for threshold'})
+            return jsonify(sarcasm_detector.predict(json_data["query"]))
+        else: return jsonify({'error': 'please specify a string'})
+    except: 
+        return jsonify({'error': 'something went wrong'})
+
 
 if __name__ == "__main__":
     app.run()
