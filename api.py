@@ -25,6 +25,16 @@ def return_prediction():
     if (json_data is None):
         return jsonify({'error': 'api only accepts json format'})
     try:
+        if ("queries" in json_data):
+            entries = json_data["queries"]
+            if ("threshold" in json_data):
+                try:
+                    threshold = float(json_data["threshold"])
+                    return jsonify(sarcasm_detector.predict(entries, threshold))
+                except ValueError:
+                    return jsonify({'error': 'please pass in a float for threshold'})
+            return jsonify(sarcasm_detector.predict(entries))
+
         if ("query" in json_data):
             query = json_data["query"]
             if ("threshold" in json_data):
@@ -33,10 +43,10 @@ def return_prediction():
                     return jsonify(sarcasm_detector.predict(query, threshold))
                 except ValueError:
                     return jsonify({'error': 'please pass in a float for threshold'})
-            return jsonify(sarcasm_detector.predict(json_data["query"]))
+            return jsonify(sarcasm_detector.predict(query))
         else: return jsonify({'error': 'please specify a string'})
-    except: 
-        return jsonify({'error': 'something went wrong'})
+    except Exception as e:
+        return jsonify({'error': f'{e}'})
 
 
 if __name__ == "__main__":
