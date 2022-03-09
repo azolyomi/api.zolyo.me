@@ -17,7 +17,25 @@ def homepage():
 def return_json():
     return jsonify({'test': True})
 
-sarcasm_detector = SarcasmModel(path_to_build_folder="../sarcasm_nlp/", path_to_saved_model="../sarcasm_nlp/saved_model/fake_news_v1/")
+sarcasm_detector = SarcasmModel(path_to_build_folder="../sarcasm_nlp/", path_to_saved_model="../sarcasm_nlp/saved_model2/fake_news_v1/")
+
+@app.route('/sarcasm_iteration', methods=["POST"])
+def commit_iteration():
+    try:
+        sarcasm_detector.additional_train_model()
+        return jsonify({"success": True});
+    except Exception as e:
+        return jsonify({'success': False, 'error': e});
+
+@app.route('/sarcasm_reset', methods=["POST"])
+def commit_reset():
+    try:
+        global sarcasm_detector 
+        sarcasm_detector = SarcasmModel(path_to_build_folder="../sarcasm_nlp/", path_to_saved_model="../sarcasm_nlp/saved_model2/fake_news_v1/")
+        return jsonify({"success": True});
+    except Exception as e:
+        return jsonify({'success': False, 'error': e});
+
 
 @app.route('/sarcasm_detection', methods=["POST"])
 def return_prediction():
